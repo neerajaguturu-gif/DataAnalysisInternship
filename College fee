@@ -1,0 +1,40 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv("/content/collegefee.csv")
+
+df["Pending_Amount"] = df["Total Fee"] - df["Amount Paid"]
+
+df["Payment_Status"] = df["Pending_Amount"].apply(lambda x: "Paid" if x == 0 else "Pending")
+
+total_students = len(df)
+students_paid = (df["Payment_Status"] == "Paid").sum()
+students_pending = (df["Payment_Status"] == "Pending").sum()
+
+total_collection = df["Amount Paid"].sum()
+total_pending = df["Pending_Amount"].sum()
+
+print("Total Students:", total_students)
+print("Students Fully Paid:", students_paid)
+print("Students Pending:", students_pending)
+print("Total Fee Collected:", total_collection)
+print("Total Pending Amount:", total_pending)
+
+status_count = df["Payment_Status"].value_counts()
+
+plt.figure(figsize=(6,6))
+plt.pie(status_count, labels=status_count.index, autopct="%1.1f%%")
+plt.title("Fee Payment Status")
+plt.show()
+
+plt.figure(figsize=(8,5))
+plt.bar(df["StudentName"], df["Amount Paid"])
+plt.xticks(rotation=45)
+plt.title("Amount Paid by Students")
+plt.xlabel("Students")
+plt.ylabel("Amount Paid")
+plt.tight_layout()
+plt.show()
+
+plt.figure(figsize=(8,5))
+plt.hist(df["Pending_Amount"])
